@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz : Démarche Marketing & Définition des Marchés</title>
+    <style>
+        body {
+            font-family: 'Mayan', sans-serif;
+            margin: 0;
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: #333;
+            text-align: center;
+        }
+        .quiz-container, .summary {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+            background-image: url('images/back.jpg.webp');
+            background-size: cover;
+            background-position: center;
+        }
+        .question {
+            font-size: 18px;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #000;
+        }
+        .choices {
+            list-style: none;
+            padding: 0;
+            text-align: left;
+            margin-left: 20%;
+        }
+        .choices li {
+            margin: 8px 0;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            background-color: #FF0000;
+            color: white;
+            border-radius: 10px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #CC0000;
+        }
+        .summary {
+            display: none;
+        }
+        .summary ul {
+            list-style: none;
+            padding: 0;
+        }
+        .summary li {
+            text-align: left;
+            margin-left: 20%;
+            margin-bottom: 10px;
+        }
+        .correct {
+            color: green;
+            font-weight: bold;
+        }
+        .incorrect {
+            color: red;
+            font-weight: bold;
+        }
+        .score {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        @media (max-width: 768px) {
+            .quiz-container, .summary {
+                max-width: 90%;
+                margin: 20px auto;
+                padding: 15px;
+                border-radius: 10px;
+            }
+            button {
+                font-size: 14px;
+                padding: 8px 16px;
+            }
+        }
+        @media (max-width: 480px) {
+            .quiz-container, .summary {
+                padding: 10px;
+                margin: 10px;
+                border-radius: 10px;
+            }
+            .question {
+                font-size: 16px;
+            }
+            button {
+                font-size: 12px;
+                padding: 6px 12px;
+                border-radius: 10px;
+            }
+        }
+        @media (min-width: 1024px) {
+            .quiz-container, .summary {
+                max-width: 800px;
+                padding: 30px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="quiz-container" id="quiz-container">
+    <h2>QCM ENTRAINEMENT - Equity, Liabilities, and Financing</h2>
+    <div id="question-container">
+        <!-- Les questions seront affichées ici dynamiquement -->
+    </div>
+    <button id="next-button" onclick="nextQuestion()">Suivant</button>
+</div>
+
+<div class="summary" id="summary">
+    <h3>Récapitulatif</h3>
+    <ul id="summary-list">
+        <!-- Le récapitulatif des réponses sera affiché ici -->
+    </ul>
+    <div class="score" id="score"></div>
+    <button onclick="restartQuiz()">Recommencer</button>
+</div>
+
+<script>
+    const quizData = [
+        { question: "What does equity represent in a company?", choices: ["The total amount of loans the company has", "The value of ownership after subtracting liabilities from assets", "The total value of all assets owned by the company", "The profit made by the company in a fiscal year"], correct: 1 },
+        { question: "What is the capital structure of a company?", choices: ["The mix of long-term and short-term assets", "The division between cash and receivables", "The mix of debt and equity financing", "The total amount of liabilities the company holds"], correct: 2 },
+        { question: "Which of the following is not included in shareholders' equity?", choices: ["Share capital", "Retained earnings", "Reserves", "Short-term loans"], correct: 3 },
+        { question: "What does par value of a share represent?", choices: ["The market value of a share", "The face value of a share used to calculate legal capital", "The value of a share on the stock exchange", "The total price paid by the shareholder"], correct: 1 },
+        { question: "Which of the following is not a type of current liability?", choices: ["Accounts payable", "Short-term loans", "Bonds payable", "Interest payable"], correct: 2 },
+        { question: "What does working capital measure?", choices: ["The total assets of a company", "The difference between current assets and current liabilities", "The total cash reserves of a company", "The long-term debt of a company"], correct: 1 },
+        { question: "Why is working capital important to a company’s financial health?", choices: ["It shows the total amount of investments made by the company", "It indicates the company's ability to meet short-term obligations", "It measures long-term profitability", "It tracks the company’s equity performance"], correct: 1 },
+        { question: "What happens to working capital if current liabilities increase while current assets remain constant?", choices: ["Working capital increases", "Working capital decreases", "Working capital remains unchanged", "Working capital becomes negative"], correct: 1 },
+        { question: "Which of the following is not a non-current liability?", choices: ["Long-term bank loans", "Accounts payable", "Bonds payable", "Deferred tax liabilities"], correct: 1 },
+        { question: "How is interest on long-term debt treated in accounting?", choices: ["As part of the liability itself", "As a current liability once it becomes due", "As part of the asset value", "As part of equity"], correct: 1 },
+        { question: "What is the impact of contracting long-term debt on a company’s financial statements?", choices: ["It increases both assets and liabilities", "It increases liabilities but decreases equity", "It decreases cash flow but increases net income", "It only affects the income statement"], correct: 0 },
+        { question: "When a company issues long-term bonds, where is this recorded in the balance sheet?", choices: ["Under equity", "As a current liability", "As a non-current liability", "Under working capital"], correct: 2 },
+        { question: "What is a residual claim for shareholders?", choices: ["A claim on dividends before creditors are paid", "A claim on the remaining assets after liabilities are settled during liquidation", "A claim on all profits of the company", "A claim on short-term loans provided to the company"], correct: 1 },
+        { question: "How is interest on long-term loans treated for tax purposes?", choices: ["It is non-deductible and increases taxable income", "It is deducted from taxable income as a necessary business expense", "It is added to taxable income and increases tax liability", "It is recorded as a deferred tax asset"], correct: 1 },
+        { question: "What happens to the liability when a company makes a payment on its long-term debt?", choices: ["The liability remains unchanged", "The liability is reduced by the amount of the payment", "The liability increases by the amount of the payment", "The liability is moved to equity"], correct: 1 }
+    ];
+
+    let currentQuestionIndex = 0;
+    let selectedAnswers = [];
+
+    function loadQuestion() {
+        const container = document.getElementById('question-container');
+        container.innerHTML = '';
+
+        const questionData = quizData[currentQuestionIndex];
+        const questionElem = document.createElement('div');
+        questionElem.className = 'question';
+        questionElem.textContent = questionData.question;
+
+        const choicesElem = document.createElement('ul');
+        choicesElem.className = 'choices';
+
+        questionData.choices.forEach((choice, index) => {
+            const choiceElem = document.createElement('li');
+            const choiceInput = document.createElement('input');
+            choiceInput.type = 'radio';
+            choiceInput.name = 'choice';
+            choiceInput.value = index;
+            choiceInput.id = `choice${index}`;
+            
+            const choiceLabel = document.createElement('label');
+            choiceLabel.htmlFor = `choice${index}`;
+            choiceLabel.textContent = choice;
+
+            choiceElem.appendChild(choiceInput);
+            choiceElem.appendChild(choiceLabel);
+            choicesElem.appendChild(choiceElem);
+        });
+
+        container.appendChild(questionElem);
+        container.appendChild(choicesElem);
+    }
+
+    function nextQuestion() {
+        const selectedChoice = document.querySelector('input[name="choice"]:checked');
+        if (!selectedChoice) {
+            alert("Veuillez sélectionner une réponse !");
+            return;
+        }
+
+        selectedAnswers.push(parseInt(selectedChoice.value));
+        currentQuestionIndex++;
+
+        if (currentQuestionIndex < quizData.length) {
+            loadQuestion();
+        } else {
+            showSummary();
+        }
+    }
+
+    function showSummary() {
+        document.getElementById('quiz-container').style.display = 'none';
+        const summary = document.getElementById('summary');
+        summary.style.display = 'block';
+
+        const summaryList = document.getElementById('summary-list');
+        summaryList.innerHTML = '';
+
+        let correctAnswers = 0;
+
+        quizData.forEach((q, index) => {
+            const summaryItem = document.createElement('li');
+            summaryItem.innerHTML = `
+                <strong>${q.question}</strong><br>
+                <div style="text-align: left; margin-left: 20%;">
+                    Votre réponse: ${q.choices[selectedAnswers[index]]} - 
+                    ${selectedAnswers[index] === q.correct ? '<span class="correct">Correct</span>' : '<span class="incorrect">Incorrect</span>'}<br>
+                    Bonne réponse: ${q.choices[q.correct]}
+                </div>
+            `;
+            summaryList.appendChild(summaryItem);
+            if (selectedAnswers[index] === q.correct) {
+                correctAnswers++;
+            }
+        });
+
+        document.getElementById('score').textContent = `Score: ${correctAnswers} / ${quizData.length}`;
+    }
+
+    function restartQuiz() {
+        currentQuestionIndex = 0;
+        selectedAnswers = [];
+        document.getElementById('summary').style.display = 'none';
+        document.getElementById('quiz-container').style.display = 'block';
+        loadQuestion();
+    }
+
+    loadQuestion();
+</script>
+
+</body>
+
+</html>
